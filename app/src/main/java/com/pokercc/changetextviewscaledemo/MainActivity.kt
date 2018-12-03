@@ -17,26 +17,61 @@ import kotlinx.android.synthetic.main.activity_main.*
 const val TAG = "测试改变字体大小"
 
 
-class ChangeTextSizeHelper(private val rootView: ViewGroup) {
-    private val textSizeMap: MutableMap<Int, Float> = mutableMapOf()
+/**
+ * 修改文字大小的帮助类
+ */
+class TextSizeHelper(private val rootView: ViewGroup) {
 
-    var fontScaled: Float? = null
+
+    /**
+     * 扩展属性，原始字体大小，单位sp
+     */
+    private var TextView.originSize: Float?
+        get() = getTag(R.id.TEXT_SIZE_HELPER_ORIGIN_SIZE) as Float?
+        set(value) {
+            setTag(R.id.TEXT_SIZE_HELPER_ORIGIN_SIZE, value)
+        }
+
+    // 默认缩放比例
+    private val defaultScaledDensity: Float by lazy { rootView.resources.displayMetrics.scaledDensity }
+    // 字体缩放的比例
+    public var fontScaled: Float = 1.0f
+    // 新的缩放比例
+    public val newScaledDensity: Float
+        get() = defaultScaledDensity * fontScaled
+
+    init {
+        // 保存textview的默认尺寸
+        rootView.viewTreeObserver.addOnGlobalLayoutListener {
+            allTextViews()
+                .forEach {
+                    if (it.originSize == null) {
+                        it.originSize = it.textSize / it.resources.displayMetrics.scaledDensity
+                    }
+                }
+        }
+    }
+
+
+    /**
+     * 改变字体大小，调用次方法
+     */
     fun onFontScaled(fontScaled: Float) {
-        Log.d("ChangeTextSizeHelper", "fontScaled=$fontScaled")
+        Log.d("TextSizeHelper", "fontScaled=$fontScaled")
         this.fontScaled = fontScaled
-        rootView.allViews()
+        allTextViews()
+            .forEach {
+                it.setTextSize(TypedValue.COMPLEX_UNIT_SP, it.originSize!!)
+            }
+    }
+
+
+    private fun allTextViews(): List<TextView> {
+        return rootView.allViews()
             .filter { it is TextView }
             .map { it as TextView }
             .filter { it.id != View.NO_ID }
-            .onEach {
-                if (!textSizeMap.containsKey(it.id)) {
-                    textSizeMap[it.id] = it.textSize
 
-                }
-            }
-            .forEach {
-                it.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSizeMap[it.id]!! * fontScaled)
-            }
     }
 
     /**
@@ -55,22 +90,18 @@ class ChangeTextSizeHelper(private val rootView: ViewGroup) {
     }
 
 
-    fun getScaledDensity(context: Context): Float {
-        return (this.fontScaled ?: 1.0f)
-    }
-
 }
 
 class MainActivity : AppCompatActivity() {
 
-    var textSizeHelper: ChangeTextSizeHelper? = null
+    var textSizeHelper: TextSizeHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Log.i(TAG, "onCreate")
         val rootView = findViewById<ViewGroup>(android.R.id.content)
-        textSizeHelper = ChangeTextSizeHelper(rootView)
+        textSizeHelper = TextSizeHelper(rootView)
         seekBar.max = 100
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -89,22 +120,18 @@ class MainActivity : AppCompatActivity() {
     fun onAddNewTextViewClick(view: View) {
         ll_content.addView(TextView(this).also {
             it.text = "AAAAAAA"
+            it.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             it.id = View.generateViewId()
         })
 
     }
 
-    var defaultScaledDensity: Float? = null
-
     override fun getResources(): Resources {
-        val resources = super.getResources()
-        if (defaultScaledDensity == null) {
-            defaultScaledDensity = resources.displayMetrics.scaledDensity
-        }
-        if (textSizeHelper != null) {
-            resources.displayMetrics.scaledDensity = defaultScaledDensity!! * textSizeHelper!!.getScaledDensity(this)
-        }
 
-        return resources
+        return super.getResources().apply {
+            textSizeHelper?.apply {
+                displayMetrics.scaledDensity = textSizeHelper!!.newScaledDensity
+            }
+        }
     }
 }
