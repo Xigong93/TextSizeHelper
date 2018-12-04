@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
- 
+     // 如果需要仅仅当前activity有效，需要覆盖此方法；全局生效不需要覆盖这里
     // 覆盖getResources方法，修改scaledDensity的值
     override fun getResources(): Resources {
 

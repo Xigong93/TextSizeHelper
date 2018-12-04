@@ -1,6 +1,7 @@
 package com.pokercc.changetextviewscaledemo
 
 import android.annotation.TargetApi
+import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -60,12 +61,14 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun getResources(): Resources {
+    fun onStartNewActivityClick(view: View) {
+        startActivity(Intent(this, OtherActivity::class.java))
+    }
 
-        return super.getResources().apply {
-            textSizeHelper?.apply {
-                displayMetrics.scaledDensity = textSizeHelper!!.newScaledDensity
-            }
+    override fun getResources(): Resources {
+        if (textSizeHelper != null) {
+            return textSizeHelper!!.getProxyResource(super.getResources())
         }
+        return super.getResources()
     }
 }

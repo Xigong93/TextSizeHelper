@@ -40,6 +40,12 @@
             android:textSize="16dp"
             android:text="新增不可以缩放的textview"
             android:onClick="onAddNewUnableTextViewClick"/>
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="use_dp"
+            android:textSize="16dp"
+            android:text="打开新的activity"
+            android:onClick="onStartNewActivityClick"/>
 
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                   android:background="@android:color/holo_green_dark"

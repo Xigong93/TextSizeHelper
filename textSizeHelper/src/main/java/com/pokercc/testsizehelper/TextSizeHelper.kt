@@ -1,5 +1,6 @@
 package com.pokercc.testsizehelper
 
+import android.content.res.Resources
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
@@ -20,7 +21,7 @@ class TextSizeHelper(
     /**
      * 自定义是否允许字体缩放的校验器
      */
-    private var viewPredicate: ViewPredicate? = null
+    private var viewPredicate: (View) -> Boolean = { true }
 ) {
 
     companion object {
@@ -58,22 +59,36 @@ class TextSizeHelper(
 
 
     /**
-     * 改变字体大小，调用次方法
+     * 改变字体大小
+     * @param fontScaled 字体缩放比例[0.1,8]
+     * @param globalApp 是否是整个app生效
      */
-    fun onFontScaled(fontScaled: Float) {
+    fun onFontScaled(fontScaled: Float, globalApp: Boolean = false) {
         if (fontScaled < 0.1 || fontScaled > 8) {
             throw IllegalArgumentException("fontScale to large or too small,is $fontScaled")
         }
-        if (fontScaled != this.fontScaled) {
-            Log.d("TextSizeHelper", "fontScaled=$fontScaled")
-            this.fontScaled = fontScaled
-            enableAllTextViews()
-                .forEach {
-                    it.originSize?.apply {
-                        it.setTextSize(TypedValue.COMPLEX_UNIT_SP, this)
-                    }
-                }
+        if (fontScaled == this.fontScaled) {
+            return
         }
+
+        Log.d("TextSizeHelper", "fontScaled=$fontScaled")
+        this.fontScaled = fontScaled
+
+        // 改变设置
+        if (globalApp) {
+            val resources = rootView.resources
+            resources.updateConfiguration(
+                resources.configuration.also { it.fontScale = this.fontScaled },
+                resources.displayMetrics.also { it.scaledDensity = newScaledDensity })
+        }
+        // 动态修改view树里面的textView
+        enableAllTextViews()
+            .forEach {
+                it.originSize?.apply {
+                    it.setTextSize(TypedValue.COMPLEX_UNIT_SP, this)
+                }
+            }
+
     }
 
 
@@ -101,7 +116,7 @@ class TextSizeHelper(
             if (!predicate(child)) {
                 continue
             }
-            if (viewPredicate != null && !viewPredicate!!.enableFontScale(child)) {
+            if (!viewPredicate(child)) {
                 continue
             }
 
@@ -117,8 +132,13 @@ class TextSizeHelper(
         return views.toList()
     }
 
-    interface ViewPredicate {
-        fun enableFontScale(view: View): Boolean
+    var resources: Resources? = null
+    fun getProxyResource(resources: Resources): Resources {
+        if (this.resources == null) {
+            this.resources = TextSizeResource(resources, 1.0f)
+        }
+        return this.resources!!.also {
+            it.displayMetrics.scaledDensity = newScaledDensity
+        }
     }
-
 }
