@@ -3,6 +3,7 @@ package com.pokercc.testsizehelper
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -24,6 +25,7 @@ object AppTextSizeHelper {
 
     // 字体缩放的比例
     var fontScaled: Float = 1.0f
+        private set
 //    // 新的缩放比例
 //    val newScaledDensity: Float
 //        get() = defaultScaledDensity * fontScaled
@@ -58,6 +60,7 @@ object AppTextSizeHelper {
         this.fontScaled = fontScaled
 
         // 改变设置
+
 
         val resources = context.resources
         resources.updateConfiguration(

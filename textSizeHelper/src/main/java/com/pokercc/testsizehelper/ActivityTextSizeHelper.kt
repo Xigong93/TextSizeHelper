@@ -44,6 +44,7 @@ class ActivityTextSizeHelper(
     private val defaultScaledDensity: Float = rootView.resources.displayMetrics.scaledDensity
     // 字体缩放的比例
     var fontScaled: Float = 1.0f
+        private set
     // 新的缩放比例
     val newScaledDensity: Float
         get() = defaultScaledDensity * fontScaled
@@ -128,14 +129,6 @@ class ActivityTextSizeHelper(
         return views.toList()
     }
 
-    private class TextSizeResource(resources: Resources, scaledDensity: Float) : Resources(
-        resources.assets,
-        DisplayMetrics().also {
-            it.setTo(resources.displayMetrics)
-            it.scaledDensity = scaledDensity
-        },
-        resources.configuration
-    )
 
     var resources: Resources? = null
     fun proxyResource(resources: Resources): Resources {
@@ -147,3 +140,12 @@ class ActivityTextSizeHelper(
         }
     }
 }
+
+private class TextSizeResource(resources: Resources, scaledDensity: Float) : Resources(
+    resources.assets,
+    DisplayMetrics().also {
+        it.setTo(resources.displayMetrics)
+        it.scaledDensity = scaledDensity
+    },
+    resources.configuration
+)

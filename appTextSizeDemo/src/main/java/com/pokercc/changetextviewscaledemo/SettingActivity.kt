@@ -15,7 +15,7 @@ class SettingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
         seekBar.max = 100
-        seekBar.progress = ((AppTextSizeHelper.fontScaled - 1) * 100).toInt()
+        seekBar.progress = (AppTextSizeHelper.fontScaled * 100).toInt() - 100
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 AppTextSizeHelper.onFontScaled(seekBar.context, progress * 0.01f + 1)
@@ -27,6 +27,7 @@ class SettingActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
+        fontScale.text = "fontScale:${resources.displayMetrics.scaledDensity}"
     }
 
 }
