@@ -5,13 +5,23 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import java.lang.IllegalArgumentException
 
 /**
  * 修改文字大小的帮助类
  * 如果某个textView 不需要缩放字体，请设置tag={user_dp...}
  * 或者是代码设置tag,TextView.setTag(R.id.TEXT_SIZE_HELPER_USER_DP,1)
  */
-class TextSizeHelper(private val rootView: ViewGroup) {
+class TextSizeHelper(
+    /**
+     * 允许字体大小缩放的根布局
+     */
+    private val rootView: ViewGroup,
+    /**
+     * 自定义是否允许字体缩放的校验器
+     */
+    private var viewPredicate: ViewPredicate? = null
+) {
 
     companion object {
         const val USE_DP = "use_dp"
@@ -35,7 +45,7 @@ class TextSizeHelper(private val rootView: ViewGroup) {
         get() = defaultScaledDensity * fontScaled
 
     init {
-        // 保存textview的默认尺寸
+        // 保存textView的默认尺寸
         rootView.viewTreeObserver.addOnGlobalLayoutListener {
             enableAllTextViews()
                 .forEach {
@@ -51,6 +61,9 @@ class TextSizeHelper(private val rootView: ViewGroup) {
      * 改变字体大小，调用次方法
      */
     fun onFontScaled(fontScaled: Float) {
+        if (fontScaled < 0.1 || fontScaled > 8) {
+            throw IllegalArgumentException("fontScale to large or too small,is $fontScaled")
+        }
         if (fontScaled != this.fontScaled) {
             Log.d("TextSizeHelper", "fontScaled=$fontScaled")
             this.fontScaled = fontScaled
@@ -88,6 +101,10 @@ class TextSizeHelper(private val rootView: ViewGroup) {
             if (!predicate(child)) {
                 continue
             }
+            if (viewPredicate != null && !viewPredicate!!.enableFontScale(child)) {
+                continue
+            }
+
             if (child is ViewGroup) {
                 views.addAll(child.allTextViews(predicate))
                 continue
@@ -98,6 +115,10 @@ class TextSizeHelper(private val rootView: ViewGroup) {
 
         }
         return views.toList()
+    }
+
+    interface ViewPredicate {
+        fun enableFontScale(view: View): Boolean
     }
 
 }
