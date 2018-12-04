@@ -21,10 +21,22 @@
             android:id="@+id/tv2"
             android:textSize="16dp"
             android:text="16dp的文字"/>
-
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:textSize="16dp"
+            android:tag="use_dp"
+            android:text="16dp的文字,不启动文字大小缩放"/>
     <SeekBar android:id="@+id/seekBar"
              android:layout_width="match_parent"
              android:layout_height="wrap_content"/>
-    <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="新增textview"
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="新增可以缩放的textview"
             android:onClick="onAddNewTextViewClick"/>
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tag="use_dp"
+            android:text="新增不可以缩放的textview"
+            android:onClick="onAddNewUnableTextViewClick"/>
 </LinearLayout>

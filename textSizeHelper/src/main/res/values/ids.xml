@@ -1,0 +1,5 @@
+<resources>
+    <item name="TEXT_SIZE_HELPER_ORIGIN_SIZE" type="id"/>
+    <!--使用dp,不能改变尺寸-->
+    <item name="TEXT_SIZE_HELPER_USER_DP" type="id"/>
+</resources>
