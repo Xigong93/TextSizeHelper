@@ -1,1 +1,1 @@
-include ':app', ':textSizeHelper'
+include ':activityTextSizeDemo', ':appTextSizeDemo', ':textSizeHelper'

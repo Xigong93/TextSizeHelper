@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:id="@+id/ll_content"
+        tools:context=".SettingActivity">
+
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:id="@+id/tv2"
+            android:textSize="16dp"
+            android:text="16dp的文字"/>
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:textSize="16dp"
+            android:tag="use_dp"
+            android:text="16dp的文字,不启动文字大小缩放"/>
+
+    <Button android:layout_width="wrap_content"
+            android:text="打开字体设置activity"
+            android:onClick="onStartSettingActivityClick"
+            android:layout_height="wrap_content"/>
+
+</LinearLayout>
