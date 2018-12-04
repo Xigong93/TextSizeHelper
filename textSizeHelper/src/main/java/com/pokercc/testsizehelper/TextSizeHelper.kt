@@ -2,6 +2,7 @@ package com.pokercc.testsizehelper
 
 import android.util.Log
 import android.util.TypedValue
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 
@@ -68,42 +69,27 @@ class TextSizeHelper(private val rootView: ViewGroup) {
      */
     private fun enableAllTextViews(): List<TextView> {
 
-        return rootView.allTextViews()
+        return rootView.allTextViews {
             // 过滤代码里设置的tag,不支持缩放字体的TextView
-            .filter { it.getTag(R.id.TEXT_SIZE_HELPER_USER_DP) == null }
-            // 过滤xml或代码里设置的tag，不支持缩放字体的TextView
-            .filter { it.tag !is String || USE_DP !in it.tag as String }
-
+            it.getTag(R.id.TEXT_SIZE_HELPER_USER_DP) == null &&
+                    // 过滤xml或代码里设置的tag，不支持缩放字体的TextView
+                    it.tag !is String || it.tag is String && USE_DP !in it.tag as String
+        }
     }
-//
-//    /**
-//     * 递归查找全部的子view
-//     */
-//    private fun ViewGroup.allViews(): List<View> {
-//        val views = mutableListOf<View>()
-//        for (i in 0 until childCount) {
-//            val child = getChildAt(i)
-//            views.add(child)
-//            if (child is ViewGroup) {
-//                views.addAll(child.allViews())
-//            }
-//        }
-//        return views.toList()
-//    }
 
 
     /**
      * 递归获取全部的textView
      */
-    private fun ViewGroup.allTextViews(): List<TextView> {
+    private fun ViewGroup.allTextViews(predicate: (View) -> Boolean): List<TextView> {
         val views = mutableListOf<TextView>()
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child is ViewGroup) {
-                views.addAll(child.allTextViews())
+            if (child is ViewGroup && predicate(child)) {
+                views.addAll(child.allTextViews(predicate))
                 continue
             }
-            if (child is TextView) {
+            if (child is TextView && predicate(child)) {
                 views.add(child)
             }
 

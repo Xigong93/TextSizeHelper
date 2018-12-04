@@ -40,4 +40,17 @@
             android:textSize="16dp"
             android:text="新增不可以缩放的textview"
             android:onClick="onAddNewUnableTextViewClick"/>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:background="@android:color/holo_green_dark"
+                  android:tag="use_dp"
+                  android:orientation="vertical">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:text="这里面的文字都不缩放，父view设置了tag"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:text="这里面的文字都不缩放，父view设置了tag"/>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:text="这里面的文字都不缩放，父view设置了tag"/>
+
+    </LinearLayout>
 </LinearLayout>
