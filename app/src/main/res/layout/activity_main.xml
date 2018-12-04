@@ -37,6 +37,7 @@
     <Button android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:tag="use_dp"
+            android:textSize="16dp"
             android:text="新增不可以缩放的textview"
             android:onClick="onAddNewUnableTextViewClick"/>
 </LinearLayout>

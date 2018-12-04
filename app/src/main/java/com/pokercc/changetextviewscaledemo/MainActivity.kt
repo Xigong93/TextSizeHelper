@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     fun onAddNewUnableTextViewClick(view: View) {
         ll_content.addView(TextView(this).also {
             it.text = "新添加的textview,不能缩放字体"
-            it.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            it.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16f)
             it.setTag(R.id.TEXT_SIZE_HELPER_USER_DP, 1)
         })
 
