@@ -85,11 +85,14 @@ class TextSizeHelper(private val rootView: ViewGroup) {
         val views = mutableListOf<TextView>()
         for (i in 0 until childCount) {
             val child = getChildAt(i)
-            if (child is ViewGroup && predicate(child)) {
+            if (!predicate(child)) {
+                continue
+            }
+            if (child is ViewGroup) {
                 views.addAll(child.allTextViews(predicate))
                 continue
             }
-            if (child is TextView && predicate(child)) {
+            if (child is TextView) {
                 views.add(child)
             }
 
