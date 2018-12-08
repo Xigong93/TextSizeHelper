@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun getResources(): Resources {
         if (activityTextSizeHelper != null) {
-            return activityTextSizeHelper!!.proxyResource(super.getResources())
+            return activityTextSizeHelper!!.getProxyResource(super.getResources())
         }
         return super.getResources()
     }
