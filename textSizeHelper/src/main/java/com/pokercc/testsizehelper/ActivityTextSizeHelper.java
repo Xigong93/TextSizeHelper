@@ -1,6 +1,9 @@
+
 package com.pokercc.testsizehelper;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.Log;
@@ -26,9 +29,9 @@ public final class ActivityTextSizeHelper {
     @SuppressWarnings("WeakerAccess")
     public static final String USE_DP = "use_dp";
     private final ViewGroup rootView;
-    private float fontScaled = 1.0f;
+    public float fontScaled = 1.0f;
     private final float defaultScaledDensity;
-    private ViewMatcher viewMatcher;
+    private final ViewMatcher viewMatcher;
     /**
      * 默认的view 匹配器
      */
@@ -36,19 +39,31 @@ public final class ActivityTextSizeHelper {
         @Override
         public boolean match(View view) {
 
+            // 未设置`TEXT_SIZE_HELPER_USER_DP`的tag
             return view.getTag(R.id.TEXT_SIZE_HELPER_USER_DP) == null &&
+                    //默认tag，不包含`user_dp`字符串
                     (!(view.getTag() instanceof String) || !((String) view.getTag()).contains(USE_DP));
         }
     };
 
     public ActivityTextSizeHelper(Activity activity) {
-        this((ViewGroup) activity.findViewById(android.R.id.content));
+        this(activity, null);
+    }
+
+    public ActivityTextSizeHelper(Activity activity, ViewMatcher viewMatcher) {
+        this((ViewGroup) activity.findViewById(android.R.id.content), viewMatcher);
     }
 
     public ActivityTextSizeHelper(ViewGroup rootView) {
+        this(rootView, null);
+    }
+
+    public ActivityTextSizeHelper(ViewGroup rootView, ViewMatcher viewMatcher) {
         Utils.assertNotNull(rootView);
         this.rootView = rootView;
-        this.defaultScaledDensity = rootView.getResources().getDisplayMetrics().scaledDensity;
+        this.viewMatcher = viewMatcher;
+        this.defaultScaledDensity = rootView.getContext().getApplicationContext().getResources().getDisplayMetrics().scaledDensity;
+        this.fontScaled = PreferenceUtil.getActivityFontScale(getActivityFromView(rootView));
         this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -59,6 +74,9 @@ public final class ActivityTextSizeHelper {
                 }
             }
         });
+        if (Math.abs(defaultScaledDensity - fontScaled) > 0.01) {
+            changeTextSize();
+        }
     }
 
 
@@ -76,6 +94,13 @@ public final class ActivityTextSizeHelper {
         }
         Log.d("ActivityTextSizeHelper", "fontScaled=" + fontScaled);
         this.fontScaled = fontScaled;
+        changeTextSize();
+        PreferenceUtil.saveActivityFontScale(getActivityFromView(rootView), fontScaled);
+
+    }
+
+
+    void changeTextSize() {
         for (TextView textView : allTextViews()) {
             if (getTextViewOriginSize(textView) > 0) {
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, getTextViewOriginSize(textView));
@@ -89,10 +114,6 @@ public final class ActivityTextSizeHelper {
         return defaultScaledDensity * fontScaled;
     }
 
-
-    public void setViewMatcher(ViewMatcher viewMatcher) {
-        this.viewMatcher = viewMatcher;
-    }
 
     /**
      * 获取代理后的Resource对象
@@ -119,6 +140,16 @@ public final class ActivityTextSizeHelper {
 
     private static void setTextViewOriginSize(TextView textView, float v) {
         textView.setTag(R.id.TEXT_SIZE_HELPER_ORIGIN_SIZE, v);
+    }
+
+    private static Activity getActivityFromView(View view) {
+        Context context = view.getContext();
+        while (!(context instanceof Activity)) {
+            if (context instanceof ContextWrapper) {
+                context = ((ContextWrapper) context).getBaseContext();
+            }
+        }
+        return (Activity) context;
     }
 
     private List<TextView> allTextViews() {
@@ -152,7 +183,13 @@ public final class ActivityTextSizeHelper {
         return textViews;
     }
 
-    interface ViewMatcher {
+    public interface ViewMatcher {
+        /**
+         * 是否需要对这个view或者是这个viewGroup的字体缩放进行处理
+         *
+         * @param view
+         * @return true 表示需要处理
+         */
         boolean match(View view);
     }
 

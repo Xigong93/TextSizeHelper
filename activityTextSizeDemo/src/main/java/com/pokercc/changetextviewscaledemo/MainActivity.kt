@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.TextView
 import com.pokercc.testsizehelper.ActivityTextSizeHelper
+import com.pokercc.testsizehelper.AppTextSizeHelper
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val TAG = "测试改变字体大小"
@@ -25,10 +26,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.i(TAG, "onCreate")
-        val rootView = findViewById<ViewGroup>(android.R.id.content)
-        activityTextSizeHelper = ActivityTextSizeHelper(rootView)
+
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+
+        activityTextSizeHelper = ActivityTextSizeHelper(this)
         seekBar.max = 100
+        seekBar.progress = (activityTextSizeHelper!!.fontScaled * 100).toInt() - 100
+
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 activityTextSizeHelper!!.onFontScaled(progress * 0.01f + 1)
