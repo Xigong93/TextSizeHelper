@@ -1,9 +1,9 @@
-package com.pokercc.testsizehelper;
+package pokercc.android.testsizehelper;
 
 import android.app.Activity;
 import android.content.Context;
 
-public class PreferenceUtil {
+class PreferenceUtil {
 
     private static final String PREFERENCE_FILE_NAME = "pokercc.android.textsizehelper";
     private static final String FONT_SCALE_SUFFIX = ".font_scale";

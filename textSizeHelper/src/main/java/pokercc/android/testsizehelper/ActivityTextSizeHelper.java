@@ -1,5 +1,5 @@
 
-package com.pokercc.testsizehelper;
+package pokercc.android.testsizehelper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,7 +28,8 @@ public final class ActivityTextSizeHelper {
 
     @SuppressWarnings("WeakerAccess")
     public static final String USE_DP = "use_dp";
-    private final ViewGroup rootView;
+    private final Activity activity;
+    private ViewGroup rootView;
     public float fontScaled = 1.0f;
     private final float defaultScaledDensity;
     private final ViewMatcher viewMatcher;
@@ -50,32 +51,30 @@ public final class ActivityTextSizeHelper {
         this(activity, null);
     }
 
+
     public ActivityTextSizeHelper(Activity activity, ViewMatcher viewMatcher) {
-        this((ViewGroup) activity.findViewById(android.R.id.content), viewMatcher);
-    }
-
-    public ActivityTextSizeHelper(ViewGroup rootView) {
-        this(rootView, null);
-    }
-
-    public ActivityTextSizeHelper(ViewGroup rootView, ViewMatcher viewMatcher) {
-        Utils.assertNotNull(rootView);
-        this.rootView = rootView;
+        this.defaultScaledDensity = activity.getApplicationContext().getResources().getDisplayMetrics().scaledDensity;
+        this.fontScaled = PreferenceUtil.getActivityFontScale(activity);
         this.viewMatcher = viewMatcher;
-        this.defaultScaledDensity = rootView.getContext().getApplicationContext().getResources().getDisplayMetrics().scaledDensity;
-        this.fontScaled = PreferenceUtil.getActivityFontScale(getActivityFromView(rootView));
-        this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                for (TextView textView : allTextViews()) {
-                    if (getTextViewOriginSize(textView) <= 0) {
-                        setTextViewOriginSize(textView, textView.getTextSize() / textView.getResources().getDisplayMetrics().scaledDensity);
+        this.activity = activity;
+    }
+
+    /**
+     * 初始化，编辑view树，记录每一个textView的原始文字大小尺寸
+     */
+    public void onResume() {
+        if (this.rootView == null) {
+            this.rootView = this.activity.findViewById(android.R.id.content);
+            this.rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    for (TextView textView : allTextViews()) {
+                        if (getTextViewOriginSize(textView) <= 0) {
+                            setTextViewOriginSize(textView, textView.getTextSize() / textView.getResources().getDisplayMetrics().scaledDensity);
+                        }
                     }
                 }
-            }
-        });
-        if (Math.abs(defaultScaledDensity - fontScaled) > 0.01) {
-            changeTextSize();
+            });
         }
     }
 
@@ -94,22 +93,27 @@ public final class ActivityTextSizeHelper {
         }
         Log.d("ActivityTextSizeHelper", "fontScaled=" + fontScaled);
         this.fontScaled = fontScaled;
-        changeTextSize();
+        动态设置字体大小:
+        {
+
+            for (TextView textView : allTextViews()) {
+                if (getTextViewOriginSize(textView) > 0) {
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, getTextViewOriginSize(textView));
+                }
+            }
+        }
         PreferenceUtil.saveActivityFontScale(getActivityFromView(rootView), fontScaled);
 
     }
 
 
-    void changeTextSize() {
-        for (TextView textView : allTextViews()) {
-            if (getTextViewOriginSize(textView) > 0) {
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, getTextViewOriginSize(textView));
-            }
-        }
-    }
-
     private Resources proxyResources;
 
+    /**
+     * 缩放比例
+     *
+     * @return
+     */
     public float getScaledDensity() {
         return defaultScaledDensity * fontScaled;
     }
