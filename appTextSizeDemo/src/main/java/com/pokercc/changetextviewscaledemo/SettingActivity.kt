@@ -19,6 +19,8 @@ class SettingActivity : AppCompatActivity() {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 AppTextSizeHelper.onFontScaled(seekBar.context, progress * 0.01f + 1)
+                fontScale.text = "fontScale:${resources.displayMetrics.scaledDensity}"
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {

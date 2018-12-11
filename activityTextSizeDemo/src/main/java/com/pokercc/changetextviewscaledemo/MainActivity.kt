@@ -1,6 +1,7 @@
 package com.pokercc.changetextviewscaledemo
 
 import android.annotation.TargetApi
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Build
@@ -9,10 +10,10 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.TextView
 import com.pokercc.testsizehelper.ActivityTextSizeHelper
+import com.pokercc.testsizehelper.ActivityTextSizeHelper2
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val TAG = "测试改变字体大小"
@@ -20,15 +21,27 @@ const val TAG = "测试改变字体大小"
 
 class MainActivity : AppCompatActivity() {
 
-    var activityTextSizeHelper: ActivityTextSizeHelper? = null
+    lateinit var activityTextSizeHelper: ActivityTextSizeHelper2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.i(TAG, "onCreate")
-        val rootView = findViewById<ViewGroup>(android.R.id.content)
-        activityTextSizeHelper = ActivityTextSizeHelper(rootView)
+        activityTextSizeHelper.onCreate(this)
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        activityTextSizeHelper = ActivityTextSizeHelper2(this)
+
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+
+
         seekBar.max = 100
+        seekBar.progress = (activityTextSizeHelper!!.fontScaled * 100).toInt() - 100
+
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 activityTextSizeHelper!!.onFontScaled(progress * 0.01f + 1)
@@ -40,6 +53,8 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
             }
         })
+        Log.d(this::class.java.simpleName, "resource=$resources")
+
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -69,10 +84,6 @@ class MainActivity : AppCompatActivity() {
         recreate()
     }
 
-    override fun getResources(): Resources {
-        if (activityTextSizeHelper != null) {
-            return activityTextSizeHelper!!.proxyResource(super.getResources())
-        }
-        return super.getResources()
-    }
+    override fun getResources() = activityTextSizeHelper.getProxyResource(super.getResources())!!
+
 }

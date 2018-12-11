@@ -8,6 +8,9 @@
         android:layout_height="match_parent"
         android:id="@+id/ll_content"
         tools:context=".MainActivity">
+    <com.pokercc.changetextviewscaledemo.FontScaleView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
     <TextView
             android:layout_width="match_parent"
