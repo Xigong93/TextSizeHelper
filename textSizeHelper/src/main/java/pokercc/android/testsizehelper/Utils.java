@@ -1,4 +1,4 @@
-package com.pokercc.testsizehelper;
+package pokercc.android.testsizehelper;
 
 
 abstract class Utils {

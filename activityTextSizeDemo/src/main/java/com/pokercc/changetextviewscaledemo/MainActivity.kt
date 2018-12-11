@@ -3,7 +3,6 @@ package com.pokercc.changetextviewscaledemo
 import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
-import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -12,32 +11,19 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.SeekBar
 import android.widget.TextView
-import com.pokercc.testsizehelper.ActivityTextSizeHelper
-import com.pokercc.testsizehelper.ActivityTextSizeHelper2
 import kotlinx.android.synthetic.main.activity_main.*
+import pokercc.android.testsizehelper.ActivityTextSizeHelper
 
 const val TAG = "测试改变字体大小"
 
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var activityTextSizeHelper: ActivityTextSizeHelper2
+    lateinit var activityTextSizeHelper: ActivityTextSizeHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        activityTextSizeHelper.onCreate(this)
-    }
-
-    override fun attachBaseContext(newBase: Context?) {
-        super.attachBaseContext(newBase)
-        activityTextSizeHelper = ActivityTextSizeHelper2(this)
-
-    }
-
-    override fun onPostCreate(savedInstanceState: Bundle?) {
-        super.onPostCreate(savedInstanceState)
-
 
         seekBar.max = 100
         seekBar.progress = (activityTextSizeHelper!!.fontScaled * 100).toInt() - 100
@@ -54,8 +40,21 @@ class MainActivity : AppCompatActivity() {
             }
         })
         Log.d(this::class.java.simpleName, "resource=$resources")
+    }
+
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase)
+        activityTextSizeHelper = ActivityTextSizeHelper(this)
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        activityTextSizeHelper.onResume()
+
+    }
+
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     fun onAddNewTextViewClick(view: View) {

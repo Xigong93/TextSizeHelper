@@ -1,8 +1,5 @@
 apply plugin: 'com.android.library'
-
-//apply plugin: 'com.novoda.bintray-release'
-
-apply plugin: 'com.jfrog.bintray'
+apply from: 'bintray.gradle'
 android {
     compileSdkVersion 28
 
@@ -26,29 +23,10 @@ android {
     }
 
 }
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_KEY')
-    pkg {
-        repo = 'androd'
-        name = 'text-size-helper'
-        userOrg = 'pokercc'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/pokercc/TextSizeHelper'
-    }
-}
-//publish {
-//    userOrg = 'pokercc'//bintray.com你的用户名
-//    groupId = 'pokercc.android'//jcenter上的路径
-//    artifactId = 'text-size-helper'//项目名称
-//    publishVersion = '1.0.0'//版本号
-//    desc = '动态设置app字体'//描述，不重要
-//    website = 'https://github.com/pokercc/TextSizeHelper'
-//}
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     compileOnly 'com.android.support:appcompat-v7:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

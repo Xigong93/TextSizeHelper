@@ -1,4 +1,4 @@
-package com.pokercc.testsizehelper;
+package pokercc.android.testsizehelper;
 
 import android.app.Activity;
 import android.app.Application;
@@ -69,7 +69,7 @@ public final class AppTextSizeHelper {
         }
         动态修改activity字体大小:
         {
-            activityTextHelperManager.onFontScaled();
+            activityTextHelperManager.onFontScaled(fontScaled);
         }
 
         PreferenceUtil.saveAppFontScale(context, fontScaled);
@@ -97,11 +97,14 @@ public final class AppTextSizeHelper {
 
         private ActivityTextHelperManager(ActivityTextSizeHelper.ViewMatcher viewMatcher) {
             this.viewMatcher = viewMatcher;
+
         }
 
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
+            if (!textSizeHelperMap.containsKey(activity)) {
+                textSizeHelperMap.put(activity, new ActivityTextSizeHelper(activity, viewMatcher));
+            }
         }
 
         @Override
@@ -111,8 +114,10 @@ public final class AppTextSizeHelper {
 
         @Override
         public void onActivityResumed(Activity activity) {
-            if (!textSizeHelperMap.containsKey(activity)) {
-                textSizeHelperMap.put(activity, new ActivityTextSizeHelper(activity, viewMatcher));
+
+            ActivityTextSizeHelper textSizeHelper = textSizeHelperMap.get(activity);
+            if (textSizeHelper != null) {
+                textSizeHelper.onResume();
             }
         }
 
@@ -133,9 +138,9 @@ public final class AppTextSizeHelper {
         }
 
 
-        void onFontScaled() {
+        void onFontScaled(float fontScaled) {
             for (ActivityTextSizeHelper textSizeHelper : textSizeHelperMap.values()) {
-                textSizeHelper.changeTextSize();
+                textSizeHelper.onFontScaled(fontScaled);
             }
         }
 
