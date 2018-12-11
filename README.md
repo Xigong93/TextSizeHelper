@@ -11,19 +11,17 @@ implementation 'pokercc.android:textSizeHelper:${last_version}'
 
 ```
 2. app级别的集成
-
-2.1 在application 中初始化
+>2.1 在application 中初始化
 ```java
 AppTextSizeHelper.init(this);
 ```
-
-2.2 改变字体大小
+>2.2 改变字体大小
 ```java
 AppTextSizeHelper.onFontScaled(context, 1.5f);// 字体放大50%
 
 ```
 3. activity级别的集成（选用）
-3.1 在attachBaseContext方法中创建ActivityTextSizeHelper对象
+>3.1 在attachBaseContext方法中创建ActivityTextSizeHelper对象
 ```java
 private ActivityTextSizeHelper textSizeHelper;
 @Override
@@ -31,9 +29,8 @@ protected void attachBaseContext(Context context){
      super.attachBaseContext(newBase);
      textSizeHelper = ActivityTextSizeHelper(this);
 }
-
 ```
-3.2 在onResume方法中调用onResume方法，跟踪view树
+>3.2 在onResume方法中调用onResume方法，跟踪view树
 ```java
 @Override
 protected void onResume() {
@@ -42,14 +39,14 @@ protected void onResume() {
     
  }
 ```
-3.3 修改activity.getResource方法的实现
+>3.3 修改activity.getResource方法的实现
 ```java
 @Override
 public Resources getResources(){
     return textSizeHelper.getProxyResource(super.getResources());
 }
 ```
-3.4 改变字体大小
+>3.4 改变字体大小
 ```java
 textSizeHelper.onFontScaled(1.5f);// 字体放大50%
 ```
