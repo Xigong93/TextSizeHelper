@@ -52,4 +52,4 @@ textSizeHelper.onFontScaled(1.5f);// 字体放大50%
 ```
 
 已知bug:
-* 增大activity的字体后，重启activity，设置了排除(use_dp)的TextView字体也会变大 
+* 增大activity的字体后，重启activity，设置了排除(use_dp)的TextView字体也会变大,原因是这些TextView使用sp作为尺寸单位，而字体缩放比已经变化了
